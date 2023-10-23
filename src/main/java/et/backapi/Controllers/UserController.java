@@ -1,5 +1,7 @@
 package et.backapi.Controllers;
 
+import et.backapi.Email.EmailMessages;
+import et.backapi.Email.EnviaEmailService;
 import et.backapi.Entities.User;
 import et.backapi.Models.JwtToken;
 import et.backapi.Models.UserCreateRequest;
@@ -18,6 +20,8 @@ import java.util.List;
 @RestController
 public class UserController {
     private final UserRepository ur;
+
+    private EnviaEmailService enviaEmailService;
     private JwtToken jt = new JwtToken();
     @Autowired
     public UserController(UserRepository userRepository) {
@@ -50,6 +54,9 @@ public class UserController {
         user.setUserToken(jt.getTokenCode());
         user.setUserTokenExpiration(jt.getTokenExpiration());
         User createdUser = ur.save(user);
+        this.enviaEmailService.enviar(user.getUserEmail(),
+                EmailMessages.createTitle(user),
+                EmailMessages.messageToNewUser(user,user.getUserPassword()));
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 }
