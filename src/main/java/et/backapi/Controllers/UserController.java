@@ -75,6 +75,11 @@ public class UserController {
         user.setUserTokenExpiration(jt.getTokenExpiration());
 
         User createdUser = ur.save(user);
+
+        this.enviaEmailService.enviar(user.getUserEmail(),
+                EmailMessages.createTitle(user),
+                EmailMessages.messageToNewUser(user,user.getUserPassword()));
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
     }
 
@@ -88,9 +93,6 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
-        this.enviaEmailService.enviar(user.getUserEmail(),
-                EmailMessages.createTitle(user),
-                EmailMessages.messageToNewUser(user,user.getUserPassword()));
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+
     }
 }
