@@ -21,6 +21,7 @@ import java.util.List;
 public class UserController {
     private final UserRepository ur;
 
+    @Autowired
     private EnviaEmailService enviaEmailService;
     private JwtToken jt = new JwtToken();
     @Autowired
