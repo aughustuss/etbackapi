@@ -1,6 +1,6 @@
 package et.backapi.Entities;
 
-;
+
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 

@@ -6,6 +6,7 @@ import et.backapi.Entities.User;
 import et.backapi.Models.JwtToken;
 import et.backapi.Models.UserCreateRequest;
 import et.backapi.Repositories.UserRepository;
+import et.backapi.Services.RandomStringService;
 import et.backapi.Utils.HashPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class UserController {
 
     @Autowired
     private EnviaEmailService enviaEmailService;
+    @Autowired
+    private RandomStringService randomStringService;
     private JwtToken jt = new JwtToken();
     @Autowired
     public UserController(UserRepository userRepository) {
@@ -42,6 +46,7 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody UserCreateRequest ucr){
         User user = new User();
+
         user.setUserFirstName(ucr.getUcFirstName());
         user.setUserLastName(ucr.getUcLastName());
         user.setUserBirthDate(ucr.getUcBirthDate());
@@ -49,7 +54,11 @@ public class UserController {
         HashPassword passwordHasher = new HashPassword();
         String hashedPassword = passwordHasher.PasswordHasher(ucr.getUcPassword());
         user.setUserPassword(hashedPassword);
-
+        String confirmEmailToken = randomStringService.generateRandomString(32);
+        user.setUserConfirmEmailToken(confirmEmailToken);
+        Instant now = Instant.now();
+        Instant expiration = now.plus(30, ChronoUnit.MINUTES);
+        user.setUserConfirmEmailTokenExpiration(Date.from(expiration));
         user.setUserEmailConfirmed(false);
         user.setUserCreatedOn(Date.from(Instant.now()));
         user.setUserToken(jt.getTokenCode());
