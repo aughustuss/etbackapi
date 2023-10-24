@@ -1,9 +1,12 @@
 package et.backapi.Controllers;
 
+import et.backapi.Email.EmailMessages;
+import et.backapi.Email.EnviaEmailService;
 import et.backapi.Entities.User;
 import et.backapi.Models.JwtToken;
 import et.backapi.Models.UserCreateRequest;
 import et.backapi.Repositories.UserRepository;
+import et.backapi.Services.RandomStringService;
 import et.backapi.Utils.HashPassword;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +25,11 @@ import java.util.Optional;
 @RestController
 public class UserController {
     private final UserRepository ur;
+
+    @Autowired
+    private EnviaEmailService enviaEmailService;
+    @Autowired
+    private RandomStringService randomStringService;
     private JwtToken jt = new JwtToken();
     @Autowired
     public UserController(UserRepository userRepository) {
@@ -43,6 +52,7 @@ public class UserController {
         User userExists = ur.findByUserEmail(ucr.getUcEmail());
         if(userExists != null) return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já existe");
 
+
         user.setUserFirstName(ucr.getUcFirstName());
         user.setUserLastName(ucr.getUcLastName());
         user.setUserBirthDate(ucr.getUcBirthDate());
@@ -50,7 +60,11 @@ public class UserController {
         HashPassword passwordHasher = new HashPassword();
         String hashedPassword = passwordHasher.PasswordHasher(ucr.getUcPassword());
         user.setUserPassword(hashedPassword);
-
+        String confirmEmailToken = randomStringService.generateRandomString(32);
+        user.setUserConfirmEmailToken(confirmEmailToken);
+        Instant now = Instant.now();
+        Instant expiration = now.plus(30, ChronoUnit.MINUTES);
+        user.setUserConfirmEmailTokenExpiration(Date.from(expiration));
         user.setUserEmailConfirmed(false);
         user.setUserCreatedOn(Date.from(Instant.now()));
 
@@ -61,6 +75,11 @@ public class UserController {
         user.setUserTokenExpiration(jt.getTokenExpiration());
 
         User createdUser = ur.save(user);
+
+        this.enviaEmailService.enviar(user.getUserEmail(),
+                EmailMessages.createTitle(user),
+                EmailMessages.messageToNewUser(user,user.getUserPassword()));
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
     }
 
@@ -74,5 +93,6 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+
     }
 }
