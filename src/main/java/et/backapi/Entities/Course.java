@@ -64,4 +64,6 @@ public class Course {
     public void setCv(Curriculum cv) {
         this.cv = cv;
     }
+
+
 }

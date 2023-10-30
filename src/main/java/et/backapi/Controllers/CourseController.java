@@ -2,6 +2,7 @@ package et.backapi.Controllers;
 
 import et.backapi.Entities.Course;
 import et.backapi.Entities.Curriculum;
+import et.backapi.Models.CourseCreateRequest;
 import et.backapi.Repositories.CourseRepository;
 import et.backapi.Repositories.CurriculumRepository;
 import org.apache.coyote.Response;
@@ -32,24 +33,22 @@ public class CourseController {
         return ResponseEntity.ok(c);
     }
 
-//    @GetMapping("/get/{idc}/{idcv}")
-//    public ResponseEntity<?> getCurriculumCourse(@PathVariable Long idc, @PathVariable Long idcv){
-//        Optional<Curriculum> cvExists = ccr.findById(idcv);
-//        if(cvExists.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " +idcv+ " nao encontrado");
-//        }
-//        Curriculum cv = cvExists.get();
-//
-//        List<Course> cInCurriculum = (List<Course>) cv.getCourses();
-//
-//        Optional<Course> cExists = cInCurriculum.stream().filter(course -> course.getCourseId().equals(idc)).findFirst();
-//
-//        if(cExists.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cursos com o id " + idc + " nao encontrados");
-//        }
-//
-//        Course c = cExists.get();
-//
-//        return ResponseEntity.ok(c);
-//    }
+    @PostMapping("/create/{id}")
+    public ResponseEntity<?> createCourse(@PathVariable Long id, @RequestBody CourseCreateRequest cscr){
+        Optional<Curriculum> cvExists = ccr.findById(id);
+
+        if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
+
+        Curriculum cv = cvExists.get();
+
+        Course c = new Course();
+        c.setCourseName(cscr.getCscrCourseName());
+        c.setCourseInstitution(cscr.getCscrCourseInstitution());
+        c.setCourseStartDate(cscr.getCscrCourseStartDate());
+        c.setCourseEndDate(cscr.getCscrCourseEndDate());
+        cv.addCourse(c);
+        ccr.save(cv);
+        cr.save(c);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Curso criado e associado ao curriculo de id" + id);
+    }
 }

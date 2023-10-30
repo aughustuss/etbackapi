@@ -4,6 +4,8 @@ import et.backapi.Models.Enums.UserSeniority;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Table(name = "et_curriculum")
@@ -19,12 +21,29 @@ public class Curriculum {
     @OneToOne(mappedBy = "cv")
     private Candidate candidate;
     @OneToMany(mappedBy = "cv")
-    private Set<Experience> experiences;
+    private List<Experience> experiences;
     @OneToMany(mappedBy = "cv")
-    private Set<Course> courses;
+    private List<Course> courses;
     @OneToMany(mappedBy = "cv")
-    private Set<Language> languages;
+    private List<Language> languages;
 
+    public void addCourse(Course course){
+        if(courses == null) courses = new ArrayList<>();
+        courses.add(course);
+        course.setCv(this);
+    }
+
+    public void addExperience(Experience experience){
+        if(experiences == null) experiences = new ArrayList<>();
+        experiences.add(experience);
+        experience.setCv(this);
+    }
+
+    public void addLanguage(Language language){
+        if(languages == null) languages = new ArrayList<>();
+        languages.add(language);
+        language.setCv(this);
+    }
     public Long getCurriculumId() {
         return curriculumId;
     }
@@ -49,15 +68,23 @@ public class Curriculum {
         return userCurriculumSeniority;
     }
 
-    public Set<Experience> getExperiences() {
+    public List<Experience> getExperiences() {
         return experiences;
     }
 
-    public Set<Course> getCourses() {
+    public List<Course> getCourses() {
         return courses;
     }
 
-    public Set<Language> getLanguages() {
+    public List<Language> getLanguages() {
         return languages;
+    }
+
+    public void setUserCurriculumRole(String userCurriculumRole) {
+        this.userCurriculumRole = userCurriculumRole;
+    }
+
+    public void setUserCurriculumSeniority(UserSeniority userCurriculumSeniority) {
+        this.userCurriculumSeniority = userCurriculumSeniority;
     }
 }
