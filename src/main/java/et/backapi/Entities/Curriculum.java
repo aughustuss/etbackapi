@@ -40,4 +40,24 @@ public class Curriculum {
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
     }
+
+    public String getUserCurriculumRole() {
+        return userCurriculumRole;
+    }
+
+    public UserSeniority getUserCurriculumSeniority() {
+        return userCurriculumSeniority;
+    }
+
+    public Set<Experience> getExperiences() {
+        return experiences;
+    }
+
+    public Set<Course> getCourses() {
+        return courses;
+    }
+
+    public Set<Language> getLanguages() {
+        return languages;
+    }
 }

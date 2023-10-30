@@ -37,6 +37,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getOneUser(@PathVariable Long id){
+        Optional<User> uExists = ur.findById(id);
+        if(uExists.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario com o id " + id + " nao foi encontrado");
+        }
+        User u = uExists.get();
+        return ResponseEntity.ok(u);
+    }
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody UserCreateRequest ucr){
         User user = new User();
