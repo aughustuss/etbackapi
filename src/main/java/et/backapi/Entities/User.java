@@ -1,5 +1,6 @@
 package et.backapi.Entities;
 
+import et.backapi.Models.Enums.UserType;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,9 @@ public class User {
     private Date userConfirmEmailTokenExpiration;
     private Date userBirthDate;
     private Date userCreatedOn;
-
+    private UserType userRole;
+    @OneToOne(mappedBy = "user")
+    private Candidate candidate;
     @OneToOne
     @JoinColumn(name = "userAddressId", referencedColumnName = "addressId")
     private Address address;
@@ -154,4 +157,19 @@ public class User {
         this.userCreatedOn = userCreatedOn;
     }
 
+    public UserType getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserType userRole) {
+        this.userRole = userRole;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
 }

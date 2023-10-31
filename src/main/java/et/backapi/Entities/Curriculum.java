@@ -1,9 +1,12 @@
 package et.backapi.Entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import et.backapi.Models.Enums.UserSeniority;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Table(name = "et_curriculum")
@@ -17,14 +20,32 @@ public class Curriculum {
     private String userCurriculumRole;
     private UserSeniority userCurriculumSeniority;
     @OneToOne(mappedBy = "cv")
+    @JsonManagedReference
     private Candidate candidate;
     @OneToMany(mappedBy = "cv")
-    private Set<Experience> experiences;
+    private List<Experience> experiences;
     @OneToMany(mappedBy = "cv")
-    private Set<Course> courses;
+    private List<Course> courses;
     @OneToMany(mappedBy = "cv")
-    private Set<Language> languages;
+    private List<Language> languages;
 
+    public void addCourse(Course course){
+        if(courses == null) courses = new ArrayList<>();
+        courses.add(course);
+        course.setCv(this);
+    }
+
+    public void addExperience(Experience experience){
+        if(experiences == null) experiences = new ArrayList<>();
+        experiences.add(experience);
+        experience.setCv(this);
+    }
+
+    public void addLanguage(Language language){
+        if(languages == null) languages = new ArrayList<>();
+        languages.add(language);
+        language.setCv(this);
+    }
     public Long getCurriculumId() {
         return curriculumId;
     }
@@ -39,5 +60,33 @@ public class Curriculum {
 
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
+    }
+
+    public String getUserCurriculumRole() {
+        return userCurriculumRole;
+    }
+
+    public UserSeniority getUserCurriculumSeniority() {
+        return userCurriculumSeniority;
+    }
+
+    public List<Experience> getExperiences() {
+        return experiences;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public List<Language> getLanguages() {
+        return languages;
+    }
+
+    public void setUserCurriculumRole(String userCurriculumRole) {
+        this.userCurriculumRole = userCurriculumRole;
+    }
+
+    public void setUserCurriculumSeniority(UserSeniority userCurriculumSeniority) {
+        this.userCurriculumSeniority = userCurriculumSeniority;
     }
 }
