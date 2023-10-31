@@ -2,9 +2,13 @@ package et.backapi.Controllers;
 
 import et.backapi.Email.EmailMessages;
 import et.backapi.Email.EnviaEmailService;
+import et.backapi.Entities.Candidate;
 import et.backapi.Entities.User;
+import et.backapi.Models.CandidateRegistrationRequest;
+import et.backapi.Models.Enums.UserType;
 import et.backapi.Models.JwtToken;
 import et.backapi.Models.UserCreateRequest;
+import et.backapi.Repositories.CandidateRepository;
 import et.backapi.Repositories.UserRepository;
 import et.backapi.Services.RandomStringService;
 import et.backapi.Utils.HashPassword;
@@ -25,15 +29,16 @@ import java.util.Optional;
 @RestController
 public class UserController {
     private final UserRepository ur;
-
+    private final CandidateRepository cr;
     @Autowired
     private EnviaEmailService enviaEmailService;
     @Autowired
     private RandomStringService randomStringService;
     private JwtToken jt = new JwtToken();
     @Autowired
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, CandidateRepository candidateRepository) {
         this.ur = userRepository;
+        this.cr = candidateRepository;
     }
 
     @GetMapping("/getAll")
@@ -90,6 +95,34 @@ public class UserController {
                 EmailMessages.messageToNewUser(user,user.getUserPassword()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
+    }
+
+    @PostMapping("completeRegistrationCandidate/{id}")
+    public ResponseEntity<?> completeUserRegistration(@PathVariable Long id, @RequestBody CandidateRegistrationRequest crr) {
+        Optional<User> uExists = ur.findById(id);
+        if (uExists.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com o ID " + id + " não encontrado");
+        }
+        User u = uExists.get();
+
+        Candidate c = new Candidate();
+        c.setCandidateCpf(crr.getCrrCandidateCpf());
+        c.setCandidateGithubLink(crr.getCrrCandidateGithubLink());
+        c.setCandidateInstagramLink(crr.getCrrCandidateInstagramLink());
+
+        // Verifique o candidato antes de associá-lo ao usuário
+        System.out.println("Candidate before association: " + c);
+
+        u.setCandidate(c);
+        u.setUserRole(UserType.CANDIDATE);
+
+        // Verifique novamente o candidato após a associação
+        System.out.println("Candidate after association: " + c);
+
+        cr.save(c);
+        ur.save(u);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Registro de usuário completo e feito.");
     }
 
     @DeleteMapping("delete/{userId}")

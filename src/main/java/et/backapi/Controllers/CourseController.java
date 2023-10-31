@@ -2,6 +2,7 @@ package et.backapi.Controllers;
 
 import et.backapi.Entities.Course;
 import et.backapi.Entities.Curriculum;
+import et.backapi.Entities.User;
 import et.backapi.Models.CourseCreateRequest;
 import et.backapi.Repositories.CourseRepository;
 import et.backapi.Repositories.CurriculumRepository;
@@ -50,5 +51,17 @@ public class CourseController {
         ccr.save(cv);
         cr.save(c);
         return ResponseEntity.status(HttpStatus.CREATED).body("Curso criado e associado ao curriculo de id" + id);
+    }
+
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<?> removeCourse(@PathVariable Long id){
+        Optional<Course> cExists = cr.findById(id);
+        if(cExists.isPresent()){
+            Course c = cExists.get();
+            cr.delete(c);
+            return ResponseEntity.ok("Curso com id " + id + " deletado");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

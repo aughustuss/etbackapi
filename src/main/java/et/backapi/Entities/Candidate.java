@@ -1,6 +1,7 @@
 package et.backapi.Entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +11,19 @@ import java.util.List;
 @Component
 public class Candidate extends User {
     private String candidateCpf;
-    private List<String> candidateStack;
     private String candidateInstagramLink;
     private String candidateGithubLink;
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<CandidateStack> candidateStack;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidateCvId", referencedColumnName = "curriculumId")
+    @JsonBackReference
     private Curriculum cv;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     public String getCandidateCpf() {
         return candidateCpf;
     }
@@ -25,11 +32,11 @@ public class Candidate extends User {
         this.candidateCpf = candidateCpf;
     }
 
-    public List<String> getCandidateStack() {
+    public List<CandidateStack> getCandidateStack() {
         return candidateStack;
     }
 
-    public void setCandidateStack(List<String> candidateStack) {
+    public void setCandidateStack(List<CandidateStack> candidateStack) {
         this.candidateStack = candidateStack;
     }
 
@@ -55,5 +62,13 @@ public class Candidate extends User {
 
     public void setCv(Curriculum cv) {
         this.cv = cv;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

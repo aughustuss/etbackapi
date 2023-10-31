@@ -1,5 +1,6 @@
 package et.backapi.Entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import et.backapi.Models.Enums.UserSeniority;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ public class Curriculum {
     private String userCurriculumRole;
     private UserSeniority userCurriculumSeniority;
     @OneToOne(mappedBy = "cv")
+    @JsonManagedReference
     private Candidate candidate;
     @OneToMany(mappedBy = "cv")
     private List<Experience> experiences;

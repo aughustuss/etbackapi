@@ -4,17 +4,8 @@ import et.backapi.Models.Enums.UserSeniority;
 
 
 public class CurriculumCreateRequest {
-    private Long ccrUserId;
     private String ccrUserRole;
     private UserSeniority ccrUserSeniority;
-
-    public Long getCcrUserId() {
-        return ccrUserId;
-    }
-
-    public void setCcrUserId(Long ccrUserId) {
-        this.ccrUserId = ccrUserId;
-    }
 
     public String getCcrUserRole() {
         return ccrUserRole;
