@@ -16,9 +16,6 @@ public class Candidate extends User {
     private String candidateCpf;
     private String candidateInstagramLink;
     private String candidateGithubLink;
-    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    private List<CandidateStack> candidateStack;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidateCvId", referencedColumnName = "curriculumId")
     @JsonBackReference
@@ -35,13 +32,6 @@ public class Candidate extends User {
         this.candidateCpf = candidateCpf;
     }
 
-    public List<CandidateStack> getCandidateStack() {
-        return candidateStack;
-    }
-
-    public void setCandidateStack(List<CandidateStack> candidateStack) {
-        this.candidateStack = candidateStack;
-    }
 
     public String getCandidateInstagramLink() {
         return candidateInstagramLink;

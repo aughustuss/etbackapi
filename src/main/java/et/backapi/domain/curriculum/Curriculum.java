@@ -2,6 +2,7 @@ package et.backapi.domain.curriculum;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import et.backapi.domain.candidate.Candidate;
+import et.backapi.domain.candidatestack.CandidateStack;
 import et.backapi.domain.course.Course;
 import et.backapi.adapter.enums.UserSeniority;
 import et.backapi.domain.experience.Experience;
@@ -31,6 +32,8 @@ public class Curriculum {
     private List<Course> courses;
     @OneToMany(mappedBy = "cv")
     private List<Language> languages;
+    @OneToMany(mappedBy = "cv")
+    private List<CandidateStack> candidateStacks;
 
     public void addCourse(Course course){
         if(courses == null) courses = new ArrayList<>();
@@ -48,6 +51,12 @@ public class Curriculum {
         if(languages == null) languages = new ArrayList<>();
         languages.add(language);
         language.setCv(this);
+    }
+
+    public void addCandidateStacks(CandidateStack candidateStack){
+        if(candidateStacks == null) candidateStacks = new ArrayList<>();
+        candidateStacks.add(candidateStack);
+        candidateStack.setCv(this);
     }
     public Long getCurriculumId() {
         return curriculumId;
@@ -84,6 +93,8 @@ public class Curriculum {
     public List<Language> getLanguages() {
         return languages;
     }
+
+    public List<CandidateStack> getCandidateStacks (){return candidateStacks;}
 
     public void setUserCurriculumRole(String userCurriculumRole) {
         this.userCurriculumRole = userCurriculumRole;

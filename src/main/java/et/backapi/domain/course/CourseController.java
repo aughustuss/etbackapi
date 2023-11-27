@@ -30,21 +30,24 @@ public class CourseController {
     }
 
     @PostMapping("/create/{id}")
-    public ResponseEntity<?> createCourse(@PathVariable Long id, @RequestBody CourseCreateRequestDto cscr){
+    public ResponseEntity<?> createCourse(@PathVariable Long id, @RequestBody CourseCreateRequestDto[] cscr){
         Optional<Curriculum> cvExists = ccr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 
         Curriculum cv = cvExists.get();
 
-        Course c = new Course();
-        c.setCourseName(cscr.getCscrCourseName());
-        c.setCourseInstitution(cscr.getCscrCourseInstitution());
-        c.setCourseStartDate(cscr.getCscrCourseStartDate());
-        c.setCourseEndDate(cscr.getCscrCourseEndDate());
-        cv.addCourse(c);
+        for (CourseCreateRequestDto courseDto : cscr){
+            Course c = new Course();
+            c.setCourseName(courseDto.getCscrCourseName());
+            c.setCourseInstitution(courseDto.getCscrCourseInstitution());
+            c.setCourseStartDate(courseDto.getCscrCourseStartDate());
+            c.setCourseEndDate(courseDto.getCscrCourseEndDate());
+            cv.addCourse(c);
+            cr.save(c);
+        }
+
         ccr.save(cv);
-        cr.save(c);
         return ResponseEntity.status(HttpStatus.CREATED).body("Curso criado e associado ao curriculo de id" + id);
     }
 
