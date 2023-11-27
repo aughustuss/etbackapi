@@ -1,6 +1,7 @@
 package et.backapi.domain.curriculum;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import et.backapi.domain.academicEducation.AcademicEducation;
 import et.backapi.domain.candidate.Candidate;
 import et.backapi.domain.candidatestack.CandidateStack;
 import et.backapi.domain.course.Course;
@@ -23,6 +24,10 @@ public class Curriculum {
 
     private String userCurriculumRole;
     private UserSeniority userCurriculumSeniority;
+
+    private String linkPortifolio;
+    private String userProfile;
+
     @OneToOne(mappedBy = "cv")
     @JsonManagedReference
     private Candidate candidate;
@@ -38,6 +43,10 @@ public class Curriculum {
     @OneToMany(mappedBy = "cv")
     @JsonManagedReference
     private List<CandidateStack> candidateStacks;
+
+    @OneToMany(mappedBy = "cv")
+    @JsonManagedReference
+    private List<AcademicEducation> academicEducations;
 
     public void addCourse(Course course){
         if(courses == null) courses = new ArrayList<>();
@@ -62,6 +71,30 @@ public class Curriculum {
         candidateStacks.add(candidateStack);
         candidateStack.setCv(this);
     }
+
+    public void addAcademicEducation(AcademicEducation academicEducation){
+        if (academicEducations == null) academicEducations = new ArrayList<>();
+        academicEducations.add(academicEducation);
+        academicEducation.setCv(this);
+    }
+
+
+    public String getLinkPortifolio() {
+        return linkPortifolio;
+    }
+
+    public void setLinkPortifolio(String linkPortifolio) {
+        this.linkPortifolio = linkPortifolio;
+    }
+
+    public String getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(String userProfile) {
+        this.userProfile = userProfile;
+    }
+
     public Long getCurriculumId() {
         return curriculumId;
     }
