@@ -35,6 +35,7 @@ public class UserController {
     @Autowired
     private RandomStringService randomStringService;
     private JwtToken jt = new JwtToken();
+
     @Autowired
     public UserController(UserRepository userRepository) {
         this.ur = userRepository;
@@ -51,10 +52,10 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody UserCreateRequest ucr){
+    public ResponseEntity<?> createUser(@RequestBody UserCreateRequest ucr) {
         User user = new User();
         User userExists = ur.findByUserEmail(ucr.getUcEmail());
-        if(userExists != null) return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já existe");
+        if (userExists != null) return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já existe");
 
 
         user.setUserFirstName(ucr.getUcFirstName());
@@ -80,15 +81,15 @@ public class UserController {
 
         this.enviaEmailService.enviar(user.getUserEmail(),
                 EmailMessages.createTitle(user),
-                EmailMessages.messageToNewUser(user,user.getUserPassword()));
+                EmailMessages.messageToNewUser(user, user.getUserPassword()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
     }
 
     @DeleteMapping("delete/{userId}")
-    public ResponseEntity<String> delete(@PathVariable Long userId){
+    public ResponseEntity<String> delete(@PathVariable Long userId) {
         Optional<User> userOptional = ur.findById(userId);
-        if(userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
             ur.delete(user);
             return ResponseEntity.ok("Usuario com id " + userId + " deletado");
@@ -99,12 +100,30 @@ public class UserController {
     }
 
     @PostMapping("/confirmEmail")
-    public ResponseEntity<String> confirmEmail(@RequestParam("userEmail") String userEmail, @RequestParam("confirmEmailToken") String confirmEmailToken){
-        if(userService.verificarTokenAutorizacao(userEmail,confirmEmailToken)){
+    public ResponseEntity<String> confirmEmail(@RequestParam("userEmail") String userEmail, @RequestParam("confirmEmailToken") String confirmEmailToken) {
+        if (userService.verificarTokenAutorizacao(userEmail, confirmEmailToken)) {
             User user = ur.findByUserEmail(userEmail);
             user.setUserEmailConfirmed(true);
             return ResponseEntity.ok("E-mail confirmado!!!");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro de confirmação de e-mail");
     }
+
+    @PostMapping("/redefinirSenha")
+    public ResponseEntity<String> redefinirSenha(@RequestParam String userEmail,
+                                                 @RequestParam String oldPassword,
+                                                 @RequestParam String newPassword) {
+
+        try {
+            if (userService.isOldPasswordCorrect(userEmail, oldPassword)) {
+                userService.resetPassword(userEmail, newPassword);
+                return ResponseEntity.ok("Senha redefinida com sucesso!");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha antiga incorreta.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao redefinir a senha: " + e.getMessage());
+        }
+    }
 }
+
