@@ -28,8 +28,7 @@ public class User {
     private Date userBirthDate;
     private Date userCreatedOn;
     private UserType userRole;
-    @OneToOne(mappedBy = "user")
-    private Candidate candidate;
+
     @OneToOne
     @JoinColumn(name = "userAddressId", referencedColumnName = "addressId")
     private Address address;
@@ -167,11 +166,4 @@ public class User {
         this.userRole = userRole;
     }
 
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
 }
