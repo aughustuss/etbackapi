@@ -7,6 +7,34 @@ public class CurriculumCreateRequestDto {
     private String ccrUserRole;
     private UserSeniority ccrUserSeniority;
 
+    private String linkPortifolio;
+    private String linkGitHub;
+    private String linkInstagram;
+
+    public String getLinkPortifolio() {
+        return linkPortifolio;
+    }
+
+    public void setLinkPortifolio(String linkPortifolio) {
+        this.linkPortifolio = linkPortifolio;
+    }
+
+    public String getLinkGitHub() {
+        return linkGitHub;
+    }
+
+    public void setLinkGitHub(String linkGitHub) {
+        this.linkGitHub = linkGitHub;
+    }
+
+    public String getLinkInstagram() {
+        return linkInstagram;
+    }
+
+    public void setLinkInstagram(String linkInstagram) {
+        this.linkInstagram = linkInstagram;
+    }
+
     public String getCcrUserRole() {
         return ccrUserRole;
     }
