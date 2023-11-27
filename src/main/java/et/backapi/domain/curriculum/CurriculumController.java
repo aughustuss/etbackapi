@@ -52,6 +52,9 @@ public class CurriculumController {
         Curriculum cv = new Curriculum();
         cv.setUserCurriculumRole(ccr.getCcrUserRole());
         cv.setUserCurriculumSeniority(ccr.getCcrUserSeniority());
+        cv.setLinkGitHub(ccr.getLinkGitHub());
+        cv.setLinkInstagram(ccr.getLinkInstagram());
+        cv.setLinkPortifolio(ccr.getLinkPortifolio());
         cv.setCandidate(c);
         c.setCv(cv);
         cvr.save(cv);

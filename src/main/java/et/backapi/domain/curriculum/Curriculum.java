@@ -17,6 +17,7 @@ import java.util.List;
 @Table(name = "et_curriculum")
 @Entity
 @Component
+
 public class Curriculum {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -26,7 +27,8 @@ public class Curriculum {
     private UserSeniority userCurriculumSeniority;
 
     private String linkPortifolio;
-    private String userProfile;
+    private String linkGitHub;
+    private String linkInstagram;
 
     @OneToOne(mappedBy = "cv")
     @JsonManagedReference
@@ -78,6 +80,21 @@ public class Curriculum {
         academicEducation.setCv(this);
     }
 
+    public String getLinkGitHub() {
+        return linkGitHub;
+    }
+
+    public void setLinkGitHub(String linkGitHub) {
+        this.linkGitHub = linkGitHub;
+    }
+
+    public String getLinkInstagram() {
+        return linkInstagram;
+    }
+
+    public void setLinkInstagram(String linkInstagram) {
+        this.linkInstagram = linkInstagram;
+    }
 
     public String getLinkPortifolio() {
         return linkPortifolio;
@@ -85,14 +102,6 @@ public class Curriculum {
 
     public void setLinkPortifolio(String linkPortifolio) {
         this.linkPortifolio = linkPortifolio;
-    }
-
-    public String getUserProfile() {
-        return userProfile;
-    }
-
-    public void setUserProfile(String userProfile) {
-        this.userProfile = userProfile;
     }
 
     public Long getCurriculumId() {
