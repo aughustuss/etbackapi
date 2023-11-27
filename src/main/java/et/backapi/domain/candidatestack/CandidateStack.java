@@ -1,5 +1,6 @@
 package et.backapi.domain.candidatestack;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import et.backapi.domain.candidate.Candidate;
 import et.backapi.domain.curriculum.Curriculum;
 import jakarta.persistence.*;
@@ -16,6 +17,7 @@ public class CandidateStack {
 
     @ManyToOne
     @JoinColumn(name = "curriculumId", nullable = false)
+    @JsonBackReference
     private Curriculum cv;
 
     public void setStackName(String stackName) {

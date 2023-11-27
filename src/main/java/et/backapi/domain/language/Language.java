@@ -1,5 +1,6 @@
 package et.backapi.domain.language;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.adapter.enums.LanguageProficiency;
 import jakarta.persistence.*;
@@ -13,6 +14,7 @@ public class Language {
     private LanguageProficiency languageProficiency;
     @ManyToOne
     @JoinColumn(name = "curriculumId", nullable = false)
+    @JsonBackReference
     private Curriculum cv;
 
     public Long getLanguageId() {
