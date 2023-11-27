@@ -37,7 +37,7 @@ public class CandidateController {
         // Verifique o candidato antes de associá-lo ao usuário
         System.out.println("Candidate before association: " + c);
 
-        u.setCandidate(c);
+        //u.setCandidate(c);
         u.setUserRole(UserType.CANDIDATE);
 
         // Verifique novamente o candidato após a associação
