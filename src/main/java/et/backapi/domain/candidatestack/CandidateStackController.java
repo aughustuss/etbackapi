@@ -1,38 +1,44 @@
 package et.backapi.domain.candidatestack;
 
-import et.backapi.domain.candidate.Candidate;
+import et.backapi.adapter.dto.CreateCandidateStackDTO;
+import et.backapi.domain.curriculum.Curriculum;
+import et.backapi.domain.curriculum.CurriculumRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/candidatestack")
 public class CandidateStackController {
     private final CandidateStackRepository candidateStackRepository;
+    private final CurriculumRepository curriculumRepository;
 
-    public CandidateStackController(CandidateStackRepository candidateStackRepository) {
+    public CandidateStackController(CandidateStackRepository candidateStackRepository, CurriculumRepository curriculumRepository) {
         this.candidateStackRepository = candidateStackRepository;
+        this.curriculumRepository = curriculumRepository;
     }
 
-    @PostMapping
     @Transactional
-    public ResponseEntity<String> createCandidateStack(@RequestBody CreateCandidateStackDTO candite){
+    @PostMapping("/{id}")
+    public ResponseEntity<String> createCandidateStack(@PathVariable Long id, @RequestBody CreateCandidateStackDTO candidateStackDTO){
+        Optional<Curriculum> cvExists = curriculumRepository.findById(id);
 
-        for (String stackname : candite.stackName()){
+        if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 
-            Candidate candidate = new Candidate();
-            candidate.setUserId(candite.candidate());
+        Curriculum cv = cvExists.get();
 
-
+        for (String stackname : candidateStackDTO.stackName()){
             CandidateStack candidateStack = new CandidateStack();
-            candidateStack.setCandidate(candidate);
             candidateStack.setStackName(stackname);
-
+            cv.addCandidateStacks(candidateStack);
             candidateStackRepository.save(candidateStack);
         }
+
+        curriculumRepository.save(cv);
 
         String responseMessage = "STACK DO CANDIDATO INSERIDA COM SUCESSO";
         return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);

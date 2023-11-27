@@ -32,7 +32,7 @@ public class LanguageController {
     }
 
     @PostMapping("/create/{id}")
-    public ResponseEntity<?> createCourse(@PathVariable Long id, @RequestBody LanguageCreateRequestDto lcr){
+    public ResponseEntity<?> createCourse(@PathVariable Long id, @RequestBody LanguageCreateRequestDto[] lcr){
         Optional<Curriculum> cvExists = cr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
@@ -41,11 +41,14 @@ public class LanguageController {
 
         Language l = new Language();
 
-        l.setLanguageName(lcr.getLcrLanguageName());
-        l.setLanguageProficiency(lcr.getLcrLanguageProficiency());
-        cv.addLanguage(l);
+        for(LanguageCreateRequestDto languageDTO : lcr){
+            l.setLanguageName(languageDTO.getLcrLanguageName());
+            l.setLanguageProficiency(languageDTO.getLcrLanguageProficiency());
+            cv.addLanguage(l);
+            lr.save(l);
+        }
+
         cr.save(cv);
-        lr.save(l);
         return ResponseEntity.status(HttpStatus.CREATED).body("Idioma criado e associado ao curriculo de id" + id);
     }
 

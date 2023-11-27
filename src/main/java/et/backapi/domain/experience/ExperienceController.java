@@ -33,26 +33,27 @@ public class ExperienceController {
     }
 
     @PostMapping("create/{id}")
-    public ResponseEntity<?> createExperience(@PathVariable Long id, @RequestBody ExperienceCreateRequestDto ecr){
+    public ResponseEntity<?> createExperience(@PathVariable Long id, @RequestBody ExperienceCreateRequestDto[] ecr){
         Optional<Curriculum> cvExists = ccr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 
         Curriculum cv = cvExists.get();
 
-        Experience e = new Experience();
-        e.setExperienceDescription(ecr.getEcrExperienceDescription());
-        e.setExperienceEnterprise(ecr.getEcrExperienceEnterprise());
-        e.setExperienceRole(ecr.getEcrRxperienceRole());
-        e.setExperienceType(ecr.getEcrExperienceType());
-        e.setExperienceStartDate(ecr.getEcrExperienceStartDate());
-        e.setExperienceEndDate(ecr.getEcrExperienceEndDate());
-
-        e.setCv(cv);
-        cv.addExperience(e);
+        for (ExperienceCreateRequestDto experienceDTO : ecr){
+            Experience e = new Experience();
+            e.setExperienceDescription(experienceDTO.getEcrExperienceDescription());
+            e.setExperienceEnterprise(experienceDTO.getEcrExperienceEnterprise());
+            e.setExperienceRole(experienceDTO.getEcrRxperienceRole());
+            e.setExperienceType(experienceDTO.getEcrExperienceType());
+            e.setExperienceStartDate(experienceDTO.getEcrExperienceStartDate());
+            e.setExperienceEndDate(experienceDTO.getEcrExperienceEndDate());
+            e.setCv(cv);
+            cv.addExperience(e);
+            er.save(e);
+        }
 
         ccr.save(cv);
-        er.save(e);
         return ResponseEntity.status(HttpStatus.CREATED).body("Experiencia criada e associada ao curriculo de id" + id);
     }
 
