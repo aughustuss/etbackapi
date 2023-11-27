@@ -27,12 +27,16 @@ public class Curriculum {
     @JsonManagedReference
     private Candidate candidate;
     @OneToMany(mappedBy = "cv")
+    @JsonManagedReference
     private List<Experience> experiences;
     @OneToMany(mappedBy = "cv")
+    @JsonManagedReference
     private List<Course> courses;
     @OneToMany(mappedBy = "cv")
+    @JsonManagedReference
     private List<Language> languages;
     @OneToMany(mappedBy = "cv")
+    @JsonManagedReference
     private List<CandidateStack> candidateStacks;
 
     public void addCourse(Course course){

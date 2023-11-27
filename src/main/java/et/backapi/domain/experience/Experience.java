@@ -1,5 +1,6 @@
 package et.backapi.domain.experience;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.adapter.enums.ExperienceType;
 import jakarta.persistence.*;
@@ -20,6 +21,7 @@ public class Experience {
     private Date experienceEndDate;
     @ManyToOne
     @JoinColumn(name = "curriculumId", nullable = false)
+    @JsonBackReference
     private Curriculum cv;
 
     public Experience() {

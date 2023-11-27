@@ -1,5 +1,6 @@
 package et.backapi.domain.course;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import et.backapi.domain.curriculum.Curriculum;
 import jakarta.persistence.*;
 
@@ -16,6 +17,7 @@ public class Course {
     private Date courseEndDate;
     @ManyToOne
     @JoinColumn(name = "curriculumId", nullable = false)
+    @JsonBackReference
     private Curriculum cv;
 
     public Long getCourseId() {
