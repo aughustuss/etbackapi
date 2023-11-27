@@ -7,6 +7,7 @@ import et.backapi.Models.JwtToken;
 import et.backapi.Models.UserCreateRequest;
 import et.backapi.Repositories.UserRepository;
 import et.backapi.Services.RandomStringService;
+import et.backapi.Services.UserService;
 import et.backapi.Utils.HashPassword;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class UserController {
 
     @Autowired
     private EnviaEmailService enviaEmailService;
+
+    @Autowired
+    private UserService userService;
     @Autowired
     private RandomStringService randomStringService;
     private JwtToken jt = new JwtToken();
@@ -68,10 +72,8 @@ public class UserController {
         user.setUserEmailConfirmed(false);
         user.setUserCreatedOn(Date.from(Instant.now()));
 
-        //Aqui seta um novo código pro atributo do token na tabela
+
         user.setUserToken(jt.getTokenCode());
-        //E aqui adiciona a data dele, nao precisa mexer em nada aqui, só criar a logica de gerar o token e depois
-        //fazer um set no tokenExpiration e no tokenCode do model JwtToken que tá na pasta Models
         user.setUserTokenExpiration(jt.getTokenExpiration());
 
         User createdUser = ur.save(user);
@@ -94,5 +96,15 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
+    }
+
+    @PostMapping("/confirmEmail")
+    public ResponseEntity<String> confirmEmail(@RequestParam("userEmail") String userEmail, @RequestParam("confirmEmailToken") String confirmEmailToken){
+        if(userService.verificarTokenAutorizacao(userEmail,confirmEmailToken)){
+            User user = ur.findByUserEmail(userEmail);
+            user.setUserEmailConfirmed(true);
+            return ResponseEntity.ok("E-mail confirmado!!!");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro de confirmação de e-mail");
     }
 }
