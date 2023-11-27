@@ -1,7 +1,10 @@
 package et.backapi.domain.user;
 
+import et.backapi.adapter.dto.LoginDTO;
 import et.backapi.adapter.email.EmailMessages;
 import et.backapi.adapter.email.EnviaEmailService;
+import et.backapi.infra.security.TokenJWTData;
+import et.backapi.infra.security.TokenService;
 import et.backapi.encrypt.jwt.JwtToken;
 import et.backapi.adapter.dto.UserCreateRequestDto;
 import et.backapi.domain.candidate.CandidateRepository;
@@ -10,6 +13,9 @@ import et.backapi.encrypt.HashPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -27,11 +33,18 @@ public class UserController {
     private EnviaEmailService enviaEmailService;
     @Autowired
     private RandomString randomStringService;
+
+    @Autowired
+    private AuthenticationManager manager;
+
+    @Autowired
+    private TokenService tokenService;
     private JwtToken jt = new JwtToken();
     @Autowired
-    public UserController(UserRepository userRepository, CandidateRepository candidateRepository) {
+    public UserController(UserRepository userRepository) {
         this.ur = userRepository;
     }
+
 
     @GetMapping("/get")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -98,6 +111,21 @@ public class UserController {
             return ResponseEntity.ok("Usuario com id " + userId + " deletado");
         } else {
             return ResponseEntity.notFound().build();
+        }
+
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity efetuarLogin(@RequestBody LoginDTO data){
+        try {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(data.ucEmail() , data.ucPassword());
+            Authentication authentication = this.manager.authenticate(usernamePasswordAuthenticationToken);
+            var user = (User) authentication.getPrincipal();
+            var tokenJWT = tokenService.gerarToken(user);
+            return ResponseEntity.ok(new TokenJWTData(tokenJWT));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
     }
