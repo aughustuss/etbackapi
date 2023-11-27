@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Table(name = "et_address")
 @Entity
-@Component
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
