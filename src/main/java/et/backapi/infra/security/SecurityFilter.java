@@ -1,11 +1,14 @@
 package et.backapi.infra.security;
 
+import et.backapi.domain.user.User;
 import et.backapi.domain.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,9 +32,14 @@ public class SecurityFilter extends OncePerRequestFilter {
         var tokenJWT = recuperToken(request);
         if (tokenJWT != null) {
             var subject = tokenService.getSubject(tokenJWT);;
-            var usuario = userRepository.findByUserEmail(subject);
+            var usuario = userRepository.findById(Long.parseLong(subject));
+            if(usuario.isEmpty()){
+                return;
+            }
+            User user = usuario.get();
+            System.out.println(user);
             var authorities = new ArrayList<GrantedAuthority>();
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usuario.getUserEmail() , usuario.getPassword(),authorities);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUserEmail() , user.getPassword(),authorities);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
