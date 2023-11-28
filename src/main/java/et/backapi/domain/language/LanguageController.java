@@ -3,8 +3,10 @@ package et.backapi.domain.language;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.adapter.dto.LanguageCreateRequestDto;
 import et.backapi.domain.curriculum.CurriculumRepository;
+import et.backapi.infra.security.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -16,9 +18,12 @@ public class LanguageController {
     private final LanguageRepository lr;
     private final CurriculumRepository cr;
 
-    public LanguageController(LanguageRepository languageRepository, CurriculumRepository curriculumRepository){
+    private final TokenService tokenService;
+
+    public LanguageController(LanguageRepository languageRepository, CurriculumRepository curriculumRepository, TokenService tokenService){
         this.lr = languageRepository;
         this.cr = curriculumRepository;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/get/{id}")
@@ -31,8 +36,12 @@ public class LanguageController {
         return ResponseEntity.ok(l);
     }
 
-    @PostMapping("/create/{id}")
-    public ResponseEntity<?> createLanguage(@PathVariable Long id, @RequestBody LanguageCreateRequestDto[] lcr){
+    @Transactional
+    @PostMapping
+    public ResponseEntity<?> createLanguage(@RequestHeader("Authorization") String token, @RequestBody LanguageCreateRequestDto[] lcr){
+
+        Long id = tokenService.extractId(token);
+
         Optional<Curriculum> cvExists = cr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");

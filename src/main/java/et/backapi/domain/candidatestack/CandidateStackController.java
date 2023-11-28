@@ -3,6 +3,7 @@ package et.backapi.domain.candidatestack;
 import et.backapi.adapter.dto.CreateCandidateStackDTO;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.domain.curriculum.CurriculumRepository;
+import et.backapi.infra.security.TokenService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,20 @@ public class CandidateStackController {
     private final CandidateStackRepository candidateStackRepository;
     private final CurriculumRepository curriculumRepository;
 
-    public CandidateStackController(CandidateStackRepository candidateStackRepository, CurriculumRepository curriculumRepository) {
+    private final TokenService tokenService;
+
+    public CandidateStackController(CandidateStackRepository candidateStackRepository, CurriculumRepository curriculumRepository, TokenService tokenService) {
         this.candidateStackRepository = candidateStackRepository;
         this.curriculumRepository = curriculumRepository;
+        this.tokenService = tokenService;
     }
 
     @Transactional
-    @PostMapping("/{id}")
-    public ResponseEntity<String> createCandidateStack(@PathVariable Long id, @RequestBody CreateCandidateStackDTO candidateStackDTO){
+    @PostMapping
+    public ResponseEntity<String> createCandidateStack(@RequestHeader("Authorization") String token, @RequestBody CreateCandidateStackDTO candidateStackDTO){
+
+        Long id = tokenService.extractId(token);
+
         Optional<Curriculum> cvExists = curriculumRepository.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");

@@ -1,11 +1,9 @@
 package et.backapi.domain.academicEducation;
 
 import et.backapi.adapter.dto.CreateAcademicEductationDTO;
-import et.backapi.adapter.dto.CreateCandidateStackDTO;
-import et.backapi.domain.candidatestack.CandidateStack;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.domain.curriculum.CurriculumRepository;
-import et.backapi.domain.experience.ExperienceRepository;
+import et.backapi.infra.security.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +18,20 @@ public class AcademicEducationController {
     private final AcademicEducationRepository aer;
     private final CurriculumRepository ccr;
 
-    public AcademicEducationController(AcademicEducationRepository aer, CurriculumRepository ccr) {
+    private final TokenService tokenService;
+
+    public AcademicEducationController(AcademicEducationRepository aer, CurriculumRepository ccr, TokenService tokenService) {
         this.aer = aer;
         this.ccr = ccr;
+        this.tokenService = tokenService;
     }
 
     @Transactional
-    @PostMapping("/{id}")
-    public ResponseEntity<String> createAcademicEducation(@PathVariable Long id, @RequestBody CreateAcademicEductationDTO[] createAcademicEductationDTO){
+    @PostMapping
+    public ResponseEntity<String> createAcademicEducation(@RequestHeader("Authorization") String token, @RequestBody CreateAcademicEductationDTO[] createAcademicEductationDTO){
+
+        Long id = tokenService.extractId(token);
+
         Optional<Curriculum> cvExists = ccr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");

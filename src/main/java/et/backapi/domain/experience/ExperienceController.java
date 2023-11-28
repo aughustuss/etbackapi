@@ -3,9 +3,11 @@ package et.backapi.domain.experience;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.adapter.dto.ExperienceCreateRequestDto;
 import et.backapi.domain.curriculum.CurriculumRepository;
+import et.backapi.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -16,10 +18,13 @@ import java.util.Optional;
 public class ExperienceController {
     private final ExperienceRepository er;
     private final CurriculumRepository ccr;
+
+    private final TokenService tokenService;
     @Autowired
-    public ExperienceController(ExperienceRepository experienceRepository, CurriculumRepository curriculumRepository){
+    public ExperienceController(ExperienceRepository experienceRepository, CurriculumRepository curriculumRepository, TokenService tokenService){
         this.er = experienceRepository;
         this.ccr = curriculumRepository;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/get/{id}")
@@ -32,8 +37,12 @@ public class ExperienceController {
         return ResponseEntity.ok(e);
     }
 
-    @PostMapping("create/{id}")
-    public ResponseEntity<?> createExperience(@PathVariable Long id, @RequestBody ExperienceCreateRequestDto[] ecr){
+    @Transactional
+    @PostMapping
+    public ResponseEntity<?> createExperience(@RequestHeader("Authorization") String token, @RequestBody ExperienceCreateRequestDto[] ecr){
+
+        Long id = tokenService.extractId(token);
+
         Optional<Curriculum> cvExists = ccr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");

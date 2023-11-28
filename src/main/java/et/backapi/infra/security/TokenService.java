@@ -44,6 +44,11 @@ public class TokenService {
         }
     }
 
+    public Long extractId (String tokenJWT){
+        String result = tokenJWT.replace("Bearer " , "");
+        return Long.parseLong(getSubject(result));
+    }
+
     private Instant dataExpiracao() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }

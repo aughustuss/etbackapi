@@ -10,6 +10,7 @@ import et.backapi.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,12 +61,10 @@ public class CurriculumController {
         return ResponseEntity.ok(cvCourses);
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<?> createCv(@RequestHeader("Authorization") String token, @RequestBody CurriculumCreateRequestDto ccr){
-
-        String result = token.replace("Bearer " , "");
-        String id = tokenService.getSubject(result);
-        Long userId = Long.parseLong(id);
+        Long userId = tokenService.extractId(token);
 
         Optional<User> uExists = ur.findById(userId);
         if (uExists.isEmpty()) {
@@ -87,6 +86,6 @@ public class CurriculumController {
         cv.setCandidate(c);
         c.setCv(cv);
         cvr.save(cv);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Curriculo criado e associado ao usuario de id " + id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Curriculo criado e associado ao ");
     }
 }
