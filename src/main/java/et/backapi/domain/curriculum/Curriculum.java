@@ -9,6 +9,10 @@ import et.backapi.adapter.enums.UserSeniority;
 import et.backapi.domain.experience.Experience;
 import et.backapi.domain.language.Language;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,7 +21,10 @@ import java.util.List;
 @Table(name = "et_curriculum")
 @Entity
 @Component
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Curriculum {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -29,6 +36,10 @@ public class Curriculum {
     private String linkPortifolio;
     private String linkGitHub;
     private String linkInstagram;
+
+    private String objetivo;
+
+    private String linkProfile;
 
     @OneToOne(mappedBy = "cv")
     @JsonManagedReference
@@ -80,73 +91,5 @@ public class Curriculum {
         academicEducation.setCv(this);
     }
 
-    public String getLinkGitHub() {
-        return linkGitHub;
-    }
 
-    public void setLinkGitHub(String linkGitHub) {
-        this.linkGitHub = linkGitHub;
-    }
-
-    public String getLinkInstagram() {
-        return linkInstagram;
-    }
-
-    public void setLinkInstagram(String linkInstagram) {
-        this.linkInstagram = linkInstagram;
-    }
-
-    public String getLinkPortifolio() {
-        return linkPortifolio;
-    }
-
-    public void setLinkPortifolio(String linkPortifolio) {
-        this.linkPortifolio = linkPortifolio;
-    }
-
-    public Long getCurriculumId() {
-        return curriculumId;
-    }
-
-    public void setCurriculumId(Long curriculumId) {
-        this.curriculumId = curriculumId;
-    }
-
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
-
-    public String getUserCurriculumRole() {
-        return userCurriculumRole;
-    }
-
-    public UserSeniority getUserCurriculumSeniority() {
-        return userCurriculumSeniority;
-    }
-
-    public List<Experience> getExperiences() {
-        return experiences;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public List<Language> getLanguages() {
-        return languages;
-    }
-
-    public List<CandidateStack> getCandidateStacks (){return candidateStacks;}
-
-    public void setUserCurriculumRole(String userCurriculumRole) {
-        this.userCurriculumRole = userCurriculumRole;
-    }
-
-    public void setUserCurriculumSeniority(UserSeniority userCurriculumSeniority) {
-        this.userCurriculumSeniority = userCurriculumSeniority;
-    }
 }
