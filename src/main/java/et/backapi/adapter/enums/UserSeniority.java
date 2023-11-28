@@ -1,9 +1,9 @@
 package et.backapi.adapter.enums;
 
 public enum UserSeniority {
-    INTERNSHIP,
+    ESTAGIÁRIO,
     JUNIOR,
-    MID,
-    SENIOR,
+    PLENO,
+    SÊNIOR,
     STAFF_ENGINEER
 }
