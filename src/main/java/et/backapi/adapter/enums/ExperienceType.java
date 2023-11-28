@@ -1,6 +1,6 @@
 package et.backapi.adapter.enums;
 
-public enum ExperienceType {
+public enum  ExperienceType {
     INTERNSHIP,
     CLT,
     FREELANCE,
