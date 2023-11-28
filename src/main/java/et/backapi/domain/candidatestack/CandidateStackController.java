@@ -35,7 +35,7 @@ public class CandidateStackController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<String> createCandidateStack(@RequestHeader("Authorization") String token, @RequestBody CreateCandidateStackDTO candidateStackDTO){
+    public ResponseEntity<String> createCandidateStack(@RequestHeader("Authorization") String token, @RequestBody CreateCandidateStackDTO[] csd){
 
         Long id = tokenService.extractId(token);
 
@@ -49,9 +49,9 @@ public class CandidateStackController {
 
         Curriculum cv = cvExists.get();
 
-        for (String stackname : candidateStackDTO.stackName()){
+        for (CreateCandidateStackDTO stackname : csd){
             CandidateStack candidateStack = new CandidateStack();
-            candidateStack.setStackName(stackname);
+            candidateStack.setStackName(stackname.stackName());
             cv.addCandidateStacks(candidateStack);
             candidateStackRepository.save(candidateStack);
         }
