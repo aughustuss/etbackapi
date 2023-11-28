@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 @CrossOrigin
 @RequestMapping("candidate")
@@ -51,6 +52,16 @@ public class CandidateController {
         cr.save(c);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Registro de usuário completo e feito.");
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> listAllCandidates(){
+        List<Candidate> candidates = cr.findAll();
+        if (candidates.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(candidates, HttpStatus.OK);
+        }
     }
 
     @GetMapping
