@@ -1,7 +1,7 @@
 package et.backapi.adapter.enums;
 
 public enum  ExperienceType {
-    INTERNSHIP,
+    ESTÁGIO,
     CLT,
-    FREELANCE,
+    PJ
 }
