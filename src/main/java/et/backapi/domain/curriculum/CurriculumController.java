@@ -4,7 +4,9 @@ import et.backapi.domain.candidate.Candidate;
 import et.backapi.domain.course.Course;
 import et.backapi.adapter.dto.CurriculumCreateRequestDto;
 import et.backapi.domain.candidate.CandidateRepository;
+import et.backapi.domain.user.User;
 import et.backapi.domain.user.UserRepository;
+import et.backapi.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,14 @@ public class CurriculumController {
     private CurriculumRepository cvr;
     private CandidateRepository cr;
 
-    public CurriculumController(CurriculumRepository curriculumRepository, UserRepository userRepository, CandidateRepository candidateRepository) {this.cvr = curriculumRepository; this.cr = candidateRepository;}
+    private final UserRepository ur;
+
+    private final TokenService tokenService;
+
+    public CurriculumController(CurriculumRepository curriculumRepository, UserRepository userRepository, CandidateRepository candidateRepository, UserRepository ur, TokenService tokenService) {this.cvr = curriculumRepository; this.cr = candidateRepository;
+        this.ur = ur;
+        this.tokenService = tokenService;
+    }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getCv(@PathVariable Long id){
@@ -42,11 +51,21 @@ public class CurriculumController {
         return ResponseEntity.ok(cvCourses);
     }
 
-    @PostMapping("create/{id}")
-    public ResponseEntity<?> createCv(@PathVariable Long id, @RequestBody CurriculumCreateRequestDto ccr){
-        Optional<Candidate> cExists = cr.findById(id);
-        if(cExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario com o id " + id + " nao encontrado");
-        Candidate c  = cExists.get();
+    @PostMapping
+    public ResponseEntity<?> createCv(@RequestHeader("Authorization") String token, @RequestBody CurriculumCreateRequestDto ccr){
+
+        String result = token.replace("Bearer " , "");
+        String id = tokenService.getSubject(result);
+        Long userId = Long.parseLong(id);
+
+        Optional<User> uExists = ur.findById(userId);
+        if (uExists.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com o ID " + userId + " não encontrado");
+        }
+
+        User u = uExists.get();
+
+        Candidate c = cr.findByUser(u);
 
         Curriculum cv = new Curriculum();
         cv.setUserCurriculumRole(ccr.getCcrUserRole());
