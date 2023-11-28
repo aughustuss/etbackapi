@@ -34,14 +34,8 @@ public class CandidateController {
         c.setCandidateGithubLink(crr.getCrrCandidateGithubLink());
         c.setCandidateInstagramLink(crr.getCrrCandidateInstagramLink());
 
-        // Verifique o candidato antes de associá-lo ao usuário
-        System.out.println("Candidate before association: " + c);
-
-        //u.setCandidate(c);
         u.setUserRole(UserType.CANDIDATE);
-
-        // Verifique novamente o candidato após a associação
-        System.out.println("Candidate after association: " + c);
+        c.setUser(u);
 
         cr.save(c);
 

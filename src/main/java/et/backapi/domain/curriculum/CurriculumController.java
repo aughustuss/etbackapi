@@ -48,7 +48,6 @@ public class CurriculumController {
         if(cExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario com o id " + id + " nao encontrado");
         Candidate c  = cExists.get();
 
-        System.out.println(c);
         Curriculum cv = new Curriculum();
         cv.setUserCurriculumRole(ccr.getCcrUserRole());
         cv.setUserCurriculumSeniority(ccr.getCcrUserSeniority());
