@@ -1,8 +1,12 @@
 package et.backapi.domain.candidatestack;
 
 import et.backapi.adapter.dto.CreateCandidateStackDTO;
+import et.backapi.domain.candidate.Candidate;
+import et.backapi.domain.candidate.CandidateRepository;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.domain.curriculum.CurriculumRepository;
+import et.backapi.domain.user.User;
+import et.backapi.domain.user.UserRepository;
 import et.backapi.infra.security.TokenService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
@@ -17,12 +21,15 @@ import java.util.Optional;
 public class CandidateStackController {
     private final CandidateStackRepository candidateStackRepository;
     private final CurriculumRepository curriculumRepository;
-
+    private final CandidateRepository candidateRepository;
+    private final UserRepository userRepository;
     private final TokenService tokenService;
 
-    public CandidateStackController(CandidateStackRepository candidateStackRepository, CurriculumRepository curriculumRepository, TokenService tokenService) {
+    public CandidateStackController(CandidateStackRepository candidateStackRepository, CurriculumRepository curriculumRepository, CandidateRepository candidateRepository, UserRepository userRepository, TokenService tokenService) {
         this.candidateStackRepository = candidateStackRepository;
         this.curriculumRepository = curriculumRepository;
+        this.candidateRepository = candidateRepository;
+        this.userRepository = userRepository;
         this.tokenService = tokenService;
     }
 
@@ -32,7 +39,11 @@ public class CandidateStackController {
 
         Long id = tokenService.extractId(token);
 
-        Optional<Curriculum> cvExists = curriculumRepository.findById(id);
+        Optional<User> user = userRepository.findById(id);
+
+        Candidate candidate = candidateRepository.findByUser(user);
+
+        Optional<Curriculum> cvExists = Optional.ofNullable(curriculumRepository.findByCandidate(candidate));
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 

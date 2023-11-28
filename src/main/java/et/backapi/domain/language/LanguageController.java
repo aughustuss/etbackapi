@@ -1,8 +1,12 @@
 package et.backapi.domain.language;
 
+import et.backapi.domain.candidate.Candidate;
+import et.backapi.domain.candidate.CandidateRepository;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.adapter.dto.LanguageCreateRequestDto;
 import et.backapi.domain.curriculum.CurriculumRepository;
+import et.backapi.domain.user.User;
+import et.backapi.domain.user.UserRepository;
 import et.backapi.infra.security.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +24,16 @@ public class LanguageController {
 
     private final TokenService tokenService;
 
-    public LanguageController(LanguageRepository languageRepository, CurriculumRepository curriculumRepository, TokenService tokenService){
+    private final UserRepository userRepository;
+
+    private final CandidateRepository candidateRepository;
+
+    public LanguageController(LanguageRepository languageRepository, CurriculumRepository curriculumRepository, TokenService tokenService, UserRepository userRepository, CandidateRepository candidateRepository){
         this.lr = languageRepository;
         this.cr = curriculumRepository;
         this.tokenService = tokenService;
+        this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
     }
 
     @GetMapping("/get/{id}")
@@ -42,7 +52,11 @@ public class LanguageController {
 
         Long id = tokenService.extractId(token);
 
-        Optional<Curriculum> cvExists = cr.findById(id);
+        Optional<User> user = userRepository.findById(id);
+
+        Candidate candidate = candidateRepository.findByUser(user);
+
+        Optional<Curriculum> cvExists = Optional.ofNullable(cr.findByCandidate(candidate));
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 

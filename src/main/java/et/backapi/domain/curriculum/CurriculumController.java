@@ -73,7 +73,7 @@ public class CurriculumController {
 
         User u = uExists.get();
 
-        Candidate c = cr.findByUser(u);
+        Candidate c = cr.findByUser(Optional.of(u));
 
         Curriculum cv = new Curriculum();
         cv.setUserCurriculumRole(ccr.getCcrUserRole());

@@ -73,7 +73,7 @@ public class CandidateController {
             }
 
             User u = uExists.get();
-            Optional<Candidate> candidateOptional = Optional.ofNullable(cr.findByUser(u));
+            Optional<Candidate> candidateOptional = Optional.ofNullable(cr.findByUser(Optional.of(u)));
 
             if(candidateOptional.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Candidato não encontrado para o usuário");

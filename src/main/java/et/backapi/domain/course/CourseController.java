@@ -1,8 +1,12 @@
 package et.backapi.domain.course;
 
+import et.backapi.domain.candidate.Candidate;
+import et.backapi.domain.candidate.CandidateRepository;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.adapter.dto.CourseCreateRequestDto;
 import et.backapi.domain.curriculum.CurriculumRepository;
+import et.backapi.domain.user.User;
+import et.backapi.domain.user.UserRepository;
 import et.backapi.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,11 +23,18 @@ public class CourseController {
     private final CourseRepository cr;
     private final CurriculumRepository ccr;
     private final TokenService tokenService;
+
+    private final UserRepository userRepository;
+
+    private final CandidateRepository candidateRepository;
+
     @Autowired
-    public CourseController(CourseRepository courseRepository, CurriculumRepository curriculumRepository, TokenService tokenService){
+    public CourseController(CourseRepository courseRepository, CurriculumRepository curriculumRepository, TokenService tokenService, UserRepository userRepository, CandidateRepository candidateRepository){
         this.cr = courseRepository;
         this.ccr = curriculumRepository;
         this.tokenService = tokenService;
+        this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
     }
 
     @GetMapping("/get/{id}")
@@ -42,7 +53,11 @@ public class CourseController {
 
         Long id = tokenService.extractId(token);
 
-        Optional<Curriculum> cvExists = ccr.findById(id);
+        Optional<User> user = userRepository.findById(id);
+
+        Candidate candidate = candidateRepository.findByUser(user);
+
+        Optional<Curriculum> cvExists = Optional.ofNullable(ccr.findByCandidate(candidate));
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 
