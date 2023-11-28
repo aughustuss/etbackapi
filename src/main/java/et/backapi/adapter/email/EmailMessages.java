@@ -14,7 +14,7 @@ public class EmailMessages {
                 "! Seja muito bem-vindo(a) ao nosso site" +
                 "Acesse o link para confirmar o seu e-mail. \n\n" +
                 "===================================== \n" +
-                "http://localhost:8000/confirmemail?email=" +
-                user.getUserEmail() + "?codigo=" + user.getUserConfirmEmailToken();
+                "http://localhost:3000/confirmemail?email=" +
+                user.getUserEmail() + "&codigo=" + user.getUserConfirmEmailToken();
     }
 }
