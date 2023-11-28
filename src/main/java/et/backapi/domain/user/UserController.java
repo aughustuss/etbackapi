@@ -59,7 +59,7 @@ public class UserController {
 
     @GetMapping("/cv")
     public ResponseEntity<?> getAllCandidateUser() {
-        List<Candidate> candidates = candidateRepository.findAll();
+        List<Candidate> candidates = cr.findAll();
 
         if (candidates.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foram encontrados candidatos na base de dados");
