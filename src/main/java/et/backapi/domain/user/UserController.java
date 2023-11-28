@@ -5,6 +5,7 @@ import et.backapi.adapter.dto.GetCandidateUsersDTO;
 import et.backapi.adapter.dto.LoginDTO;
 import et.backapi.adapter.email.EmailMessages;
 import et.backapi.adapter.email.EnviaEmailService;
+import et.backapi.domain.candidate.Candidate;
 import et.backapi.domain.curriculum.Curriculum;
 import et.backapi.domain.curriculum.CurriculumRepository;
 import et.backapi.infra.security.TokenJWTData;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 @RestController
 public class UserController {
     private final UserRepository ur;
-    private final CurriculumRepository cr;
+    private final CandidateRepository cr;
     @Autowired
     private EnviaEmailService enviaEmailService;
     @Autowired
@@ -47,9 +48,9 @@ public class UserController {
     private TokenService tokenService;
     private JwtToken jt = new JwtToken();
     @Autowired
-    public UserController(UserRepository userRepository, CurriculumRepository curriculumRepository) {
+    public UserController(UserRepository userRepository, CandidateRepository candidateRepository) {
         this.ur = userRepository;
-        this.cr = curriculumRepository;
+        this.cr = candidateRepository;
     }
 
     @Autowired
@@ -57,27 +58,33 @@ public class UserController {
 
 
     @GetMapping("/cv")
-    public ResponseEntity<?> getAllCandidateUser(){
-        List<User> users = ur.findAll();
-        if(users.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foram encontrados usuários na base de dados");
+    public ResponseEntity<?> getAllCandidateUser() {
+        List<Candidate> candidates = candidateRepository.findAll();
+
+        if (candidates.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foram encontrados candidatos na base de dados");
         }
-        List<GetCandidateUsersDTO> candidateUsers = users.stream().map(user -> {
-            Curriculum cv = cr.findById(user.getUserId()).orElse(null);
+
+        List<GetCandidateUsersDTO> candidateUsers = candidates.stream().map(candidate -> {
+            User user = candidate.getUser();
+            Curriculum cv = candidate.getCv();
             CurriculumCreateRequestDto cvInfos = new CurriculumCreateRequestDto();
+
             if (cv != null) {
                 cvInfos.setCcrUserRole(cv.getUserCurriculumRole());
-            cvInfos.setCcrUserSeniority(cv.getUserCurriculumSeniority());
-            cvInfos.setLinkGitHub(cv.getLinkGitHub());
-            cvInfos.setLinkInstagram(cv.getLinkInstagram());
-            cvInfos.setObjetivo(cv.getObjetivo());
-            cvInfos.setLinkPortifolio(cv.getLinkPortifolio());
+                cvInfos.setCcrUserSeniority(cv.getUserCurriculumSeniority());
+                cvInfos.setLinkGitHub(cv.getLinkGitHub());
+                cvInfos.setLinkInstagram(cv.getLinkInstagram());
+                cvInfos.setObjetivo(cv.getObjetivo());
+                cvInfos.setLinkPortifolio(cv.getLinkPortifolio());
             }
 
-            return new GetCandidateUsersDTO(user, cv.getCandidateStacks(), cvInfos);
+            return new GetCandidateUsersDTO(user, (cv != null) ? cv.getCandidateStacks() : null, cvInfos);
         }).toList();
+
         return ResponseEntity.status(HttpStatus.OK).body(candidateUsers);
     }
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = (List<User>) ur.findAll();
