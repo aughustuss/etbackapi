@@ -61,19 +61,21 @@ public class CurriculumController {
         return ResponseEntity.ok(cvCourses);
     }
 
-    @Transactional
     @PostMapping
     public ResponseEntity<?> createCv(@RequestHeader("Authorization") String token, @RequestBody CurriculumCreateRequestDto ccr){
-        Long userId = tokenService.extractId(token);
-
-        Optional<User> uExists = ur.findById(userId);
+        Optional<User> uExists = ur.findById(tokenService.extractId(token));
         if (uExists.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com o ID " + userId + " não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
         }
 
         User u = uExists.get();
+        Optional<Candidate> candidateOptional = Optional.ofNullable(cr.findByUser(Optional.of(u)));
 
-        Candidate c = cr.findByUser(Optional.of(u));
+        if(candidateOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Candidato não encontrado para o usuário");
+        }
+
+        Candidate c = candidateOptional.get();
 
         Curriculum cv = new Curriculum();
         cv.setUserCurriculumRole(ccr.getCcrUserRole());
@@ -86,6 +88,6 @@ public class CurriculumController {
         cv.setCandidate(c);
         c.setCv(cv);
         cvr.save(cv);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Curriculo criado e associado ao ");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Curriculo criado e associado ao " + c.getUser().getUserId());
     }
 }
