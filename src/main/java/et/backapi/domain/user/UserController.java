@@ -1,5 +1,6 @@
 package et.backapi.domain.user;
 
+import et.backapi.adapter.dto.CurriculumCreateRequestDto;
 import et.backapi.adapter.dto.GetCandidateUsersDTO;
 import et.backapi.adapter.dto.LoginDTO;
 import et.backapi.adapter.email.EmailMessages;
@@ -64,7 +65,15 @@ public class UserController {
         List<GetCandidateUsersDTO> candidateUsers = users.stream().map(user -> {
             Curriculum cv = cr.findById(user.getUserId()).orElse(null);
             assert cv != null;
-            return new GetCandidateUsersDTO(user, cv.getCandidateStacks());
+            CurriculumCreateRequestDto cvInfos = new CurriculumCreateRequestDto();
+            cvInfos.setCcrUserRole(cv.getUserCurriculumRole());
+            cvInfos.setCcrUserSeniority(cv.getUserCurriculumSeniority());
+            cvInfos.setLinkGitHub(cv.getLinkGitHub());
+            cvInfos.setLinkInstagram(cv.getLinkInstagram());
+            cvInfos.setObjetivo(cv.getObjetivo());
+            cvInfos.setLinkPortifolio(cv.getLinkPortifolio());
+
+            return new GetCandidateUsersDTO(user, cv.getCandidateStacks(), cvInfos);
         }).toList();
         return ResponseEntity.status(HttpStatus.OK).body(candidateUsers);
     }

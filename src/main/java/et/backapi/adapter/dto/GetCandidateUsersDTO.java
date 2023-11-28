@@ -8,6 +8,8 @@ import java.util.List;
 
 public record GetCandidateUsersDTO(
         User user,
-        List<CandidateStack> stacks
+        List<CandidateStack> stacks,
+
+        CurriculumCreateRequestDto cv
 ) {
 }

@@ -20,8 +20,8 @@ import java.util.Optional;
 @RestController
 public class CurriculumController {
     @Autowired
-    private CurriculumRepository cvr;
-    private CandidateRepository cr;
+    private final CurriculumRepository cvr;
+    private final CandidateRepository cr;
 
     private final UserRepository ur;
 
