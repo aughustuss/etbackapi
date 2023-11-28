@@ -64,14 +64,15 @@ public class UserController {
         }
         List<GetCandidateUsersDTO> candidateUsers = users.stream().map(user -> {
             Curriculum cv = cr.findById(user.getUserId()).orElse(null);
-            assert cv != null;
             CurriculumCreateRequestDto cvInfos = new CurriculumCreateRequestDto();
-            cvInfos.setCcrUserRole(cv.getUserCurriculumRole());
+            if (cv != null) {
+                cvInfos.setCcrUserRole(cv.getUserCurriculumRole());
             cvInfos.setCcrUserSeniority(cv.getUserCurriculumSeniority());
             cvInfos.setLinkGitHub(cv.getLinkGitHub());
             cvInfos.setLinkInstagram(cv.getLinkInstagram());
             cvInfos.setObjetivo(cv.getObjetivo());
             cvInfos.setLinkPortifolio(cv.getLinkPortifolio());
+            }
 
             return new GetCandidateUsersDTO(user, cv.getCandidateStacks(), cvInfos);
         }).toList();
