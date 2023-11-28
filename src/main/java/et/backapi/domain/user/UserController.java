@@ -79,6 +79,7 @@ public class UserController {
         user.setUserLastName(ucr.getUcLastName());
         user.setUserBirthDate(ucr.getUcBirthDate());
         user.setUserEmail(ucr.getUcEmail());
+        user.setUserMobilePhone(ucr.getUserMobilePhone());
         HashPassword passwordHasher = new HashPassword();
         String hashedPassword = passwordHasher.PasswordHasher(ucr.getUcPassword());
         user.setUserPassword(hashedPassword);

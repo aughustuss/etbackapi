@@ -8,6 +8,15 @@ public class UserCreateRequestDto {
     private Date ucBirthDate;
     private String ucEmail;
     private String ucPassword;
+    private String userMobilePhone;
+
+    public String getUserMobilePhone() {
+        return userMobilePhone;
+    }
+
+    public void setUserMobilePhone(String userMobilePhone) {
+        this.userMobilePhone = userMobilePhone;
+    }
 
     public String getUcFirstName() {
         return ucFirstName;
