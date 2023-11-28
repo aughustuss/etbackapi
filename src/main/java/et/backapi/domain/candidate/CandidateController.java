@@ -35,7 +35,7 @@ public class CandidateController {
         this.ccr = ccr;
         this.tokenService = tokenService;
     }
-    @PostMapping("{userId}")
+    @PostMapping
     public ResponseEntity<?> completeUserRegistration(@RequestHeader("Authorization") String token, @RequestBody CandidateRegistrationRequestDto crr) {
         Optional<User> uExists = ur.findById(tokenService.extractId(token));
         if (uExists.isEmpty()) {
