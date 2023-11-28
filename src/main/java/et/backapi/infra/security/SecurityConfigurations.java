@@ -44,6 +44,7 @@ public class SecurityConfigurations {
                     req.requestMatchers(HttpMethod.GET, "/user", "/user/get", "user/**").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/candidate/all").permitAll();
                     req.requestMatchers(HttpMethod.POST, "user/confirmEmail", "user/confirmEmail/**", "user/confirmEmail?**").permitAll();
+                    req.requestMatchers(HttpMethod.GET, "/curriculum", "/curriculum/**").permitAll();
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
                     req.anyRequest().authenticated();
                 })

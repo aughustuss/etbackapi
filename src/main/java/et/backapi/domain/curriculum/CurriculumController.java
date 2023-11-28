@@ -32,7 +32,16 @@ public class CurriculumController {
         this.tokenService = tokenService;
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping
+    public ResponseEntity<?> getAllCvs(){
+        List<Curriculum> curriculumList = cvr.findAll();
+        if (curriculumList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(curriculumList, HttpStatus.OK);
+        }
+    }
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCv(@PathVariable Long id){
         Optional<Curriculum> cvExists = cvr.findById(id);
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " nao encontrado");
