@@ -67,26 +67,35 @@ public class CandidateController {
     @GetMapping
     public ResponseEntity<?> listCandidate(@RequestHeader("Authorization") String token) {
         try {
-            String result = token.replace("Bearer " , "");
-            String id = tokenService.getSubject(result);
-            Long userId = Long.parseLong(id);
-
-            Optional<User> uExists = ur.findById(userId);
+            Optional<User> uExists = ur.findById(tokenService.extractId(token));
             if (uExists.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com o ID " + userId + " não encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
             }
 
             User u = uExists.get();
-            Candidate candidate = cr.findByUser(u);
-            System.out.println(candidate.getCv().getCurriculumId());
-            Optional<Curriculum> curriculum = ccr.findById(candidate.getCv().getCurriculumId());
+            Optional<Candidate> candidateOptional = Optional.ofNullable(cr.findByUser(u));
 
-            if (candidate != null) {
-                GetCandidatoResponseDTO candidatoResponseDTO = new GetCandidatoResponseDTO(u , candidate  , curriculum);
-                return ResponseEntity.ok(candidatoResponseDTO);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Candidato não encontrado para o usuário com o ID " + userId);
+            if(candidateOptional.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Candidato não encontrado para o usuário");
             }
+
+            Candidate candidate = candidateOptional.get();
+
+            if (candidate.getCv() == null || candidate.getCv().getCurriculumId() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Currículo não encontrado para o candidato");
+            }
+
+            Optional<Curriculum> curriculumOptional = ccr.findById(candidate.getCv().getCurriculumId());
+
+            if (curriculumOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Currículo não encontrado");
+            }
+
+            Curriculum curriculum = curriculumOptional.get();
+
+            GetCandidatoResponseDTO candidatoResponseDTO = new GetCandidatoResponseDTO(u, candidate, Optional.of(curriculum));
+            return ResponseEntity.ok(candidatoResponseDTO);
+
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
