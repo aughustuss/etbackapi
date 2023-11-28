@@ -41,7 +41,7 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, "/user/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/user").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/user", "/user/get", "user/**").permitAll();
+                    req.requestMatchers(HttpMethod.GET, "/user", "/user/get", "user/cv").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/candidate/all").permitAll();
                     req.requestMatchers(HttpMethod.POST, "user/confirmEmail", "user/confirmEmail/**", "user/confirmEmail?**").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/curriculum", "/curriculum/**").permitAll();
