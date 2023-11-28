@@ -32,16 +32,15 @@ public class LanguageController {
     }
 
     @PostMapping("/create/{id}")
-    public ResponseEntity<?> createCourse(@PathVariable Long id, @RequestBody LanguageCreateRequestDto[] lcr){
+    public ResponseEntity<?> createLanguage(@PathVariable Long id, @RequestBody LanguageCreateRequestDto[] lcr){
         Optional<Curriculum> cvExists = cr.findById(id);
 
         if(cvExists.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curriculo com o id " + id + " não encontrado");
 
         Curriculum cv = cvExists.get();
 
-        Language l = new Language();
-
         for(LanguageCreateRequestDto languageDTO : lcr){
+            Language l = new Language();
             l.setLanguageName(languageDTO.getLcrLanguageName());
             l.setLanguageProficiency(languageDTO.getLcrLanguageProficiency());
             cv.addLanguage(l);
