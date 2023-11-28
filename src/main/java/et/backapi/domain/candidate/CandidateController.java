@@ -43,9 +43,7 @@ public class CandidateController {
         User u = uExists.get();
 
         Candidate c = new Candidate();
-        c.setCandidateCpf(crr.getCrrCandidateCpf());
-        c.setCandidateGithubLink(crr.getCrrCandidateGithubLink());
-        c.setCandidateInstagramLink(crr.getCrrCandidateInstagramLink());
+        c.setCandidateCpf(crr.crrCandidateCpf());
 
         u.setUserRole(UserType.CANDIDATE);
         c.setUser(u);

@@ -25,8 +25,6 @@ public class Candidate {
 
     @Id
     private String candidateCpf;
-    private String candidateInstagramLink;
-    private String candidateGithubLink;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidateCvId", referencedColumnName = "curriculumId")
