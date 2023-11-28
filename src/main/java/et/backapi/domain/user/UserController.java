@@ -45,6 +45,9 @@ public class UserController {
         this.ur = userRepository;
     }
 
+    @Autowired
+    private UserService userService;
+
 
     @GetMapping("/get")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -128,5 +131,33 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+    }
+
+
+    @PostMapping("/confirmEmail")
+    public ResponseEntity<String> confirmEmail(@RequestParam("userEmail") String userEmail, @RequestParam("confirmEmailToken") String confirmEmailToken) {
+        if (userService.verificarTokenAutorizacao(userEmail, confirmEmailToken)) {
+            User user = ur.findByUserEmail(userEmail);
+            user.setUserEmailConfirmed(true);
+            return ResponseEntity.ok("E-mail confirmado!!!");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro de confirmação de e-mail");
+    }
+
+    @PostMapping("/redefinirSenha")
+    public ResponseEntity<String> redefinirSenha(@RequestParam String userEmail,
+                                                 @RequestParam String oldPassword,
+                                                 @RequestParam String newPassword) {
+
+        try {
+            if (userService.isOldPasswordCorrect(userEmail, oldPassword)) {
+                userService.resetPassword(userEmail, newPassword);
+                return ResponseEntity.ok("Senha redefinida com sucesso!");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha antiga incorreta.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao redefinir a senha: " + e.getMessage());
+        }
     }
 }
