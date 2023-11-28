@@ -1,8 +1,11 @@
 package et.backapi.domain.user;
 
+import et.backapi.adapter.dto.GetCandidateUsersDTO;
 import et.backapi.adapter.dto.LoginDTO;
 import et.backapi.adapter.email.EmailMessages;
 import et.backapi.adapter.email.EnviaEmailService;
+import et.backapi.domain.curriculum.Curriculum;
+import et.backapi.domain.curriculum.CurriculumRepository;
 import et.backapi.infra.security.TokenJWTData;
 import et.backapi.infra.security.TokenService;
 import et.backapi.encrypt.jwt.JwtToken;
@@ -23,12 +26,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RequestMapping("user")
 @RestController
 public class UserController {
     private final UserRepository ur;
+    private final CurriculumRepository cr;
     @Autowired
     private EnviaEmailService enviaEmailService;
     @Autowired
@@ -41,15 +46,29 @@ public class UserController {
     private TokenService tokenService;
     private JwtToken jt = new JwtToken();
     @Autowired
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, CurriculumRepository curriculumRepository) {
         this.ur = userRepository;
+        this.cr = curriculumRepository;
     }
 
     @Autowired
     private UserService userService;
 
 
-    @GetMapping("/get")
+    @GetMapping("/cv")
+    public ResponseEntity<?> getAllCandidateUser(){
+        List<User> users = ur.findAll();
+        if(users.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foram encontrados usuários na base de dados");
+        }
+        List<GetCandidateUsersDTO> candidateUsers = users.stream().map(user -> {
+            Curriculum cv = cr.findById(user.getUserId()).orElse(null);
+            assert cv != null;
+            return new GetCandidateUsersDTO(user, cv.getCandidateStacks());
+        }).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(candidateUsers);
+    }
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = (List<User>) ur.findAll();
         if (users.isEmpty()) {

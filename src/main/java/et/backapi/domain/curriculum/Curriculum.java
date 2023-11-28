@@ -91,5 +91,7 @@ public class Curriculum {
         academicEducation.setCv(this);
     }
 
-
+    public List<CandidateStack> getCandidateStacks() {
+        return candidateStacks;
+    }
 }
