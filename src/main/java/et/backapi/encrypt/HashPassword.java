@@ -8,4 +8,8 @@ public class HashPassword {
     public String PasswordHasher(String password){
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
+
+    public boolean checkPassword(String oldPassword, String hashedPassword) {
+        return BCrypt.checkpw(oldPassword, hashedPassword);
+    }
 }
