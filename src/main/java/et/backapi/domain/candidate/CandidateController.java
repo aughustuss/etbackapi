@@ -36,10 +36,10 @@ public class CandidateController {
         this.tokenService = tokenService;
     }
     @PostMapping("{userId}")
-    public ResponseEntity<?> completeUserRegistration(@PathVariable Long userId, @RequestBody CandidateRegistrationRequestDto crr) {
-        Optional<User> uExists = ur.findById(userId);
+    public ResponseEntity<?> completeUserRegistration(@RequestHeader("Authorization") String token, @RequestBody CandidateRegistrationRequestDto crr) {
+        Optional<User> uExists = ur.findById(tokenService.extractId(token));
         if (uExists.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com o ID " + userId + " não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
         }
         User u = uExists.get();
 
