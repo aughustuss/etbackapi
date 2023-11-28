@@ -36,4 +36,27 @@ public class Candidate {
     @JsonBackReference
     private User user;
 
+    public String getCandidateCpf() {
+        return candidateCpf;
+    }
+
+    public void setCandidateCpf(String candidateCpf) {
+        this.candidateCpf = candidateCpf;
+    }
+
+    public Curriculum getCv() {
+        return cv;
+    }
+
+    public void setCv(Curriculum cv) {
+        this.cv = cv;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

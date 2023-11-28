@@ -77,13 +77,13 @@ public class CurriculumController {
         Candidate c = cr.findByUser(u);
 
         Curriculum cv = new Curriculum();
-        cv.setUserCurriculumRole(ccr.ccrUserRole());
-        cv.setUserCurriculumSeniority(ccr.ccrUserSeniority());
-        cv.setLinkGitHub(ccr.linkGitHub());
-        cv.setLinkInstagram(ccr.linkInstagram());
-        cv.setLinkPortifolio(ccr.linkPortifolio());
-        cv.setLinkProfile(ccr.linkProfile());
-        cv.setObjetivo(ccr.objetivo());
+        cv.setUserCurriculumRole(ccr.getCcrUserRole());
+        cv.setUserCurriculumSeniority(ccr.getCcrUserSeniority());
+        cv.setLinkGitHub(ccr.getLinkGitHub());
+        cv.setLinkInstagram(ccr.getLinkInstagram());
+        cv.setLinkPortifolio(ccr.getLinkPortifolio());
+        cv.setLinkProfile(ccr.getLinkProfile());
+        cv.setObjetivo(ccr.getObjetivo());
         cv.setCandidate(c);
         c.setCv(cv);
         cvr.save(cv);
